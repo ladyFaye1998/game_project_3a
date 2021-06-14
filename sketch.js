@@ -90,6 +90,7 @@ function draw()
 		isFalling = false
 	}
 
+	//Coin(100, 100, 10, 10);
 }
 
 
@@ -103,7 +104,7 @@ function keyPressed()
 	{
 		isRight = true;
 	}
-	else if(keyCode === UP_ARROW)
+	else if(keyCode === 32)
 	{
 		if(gameChar_y === ground){
 			isJumping = true;
@@ -125,7 +126,7 @@ function keyReleased()
 	{
 		isLeft = false;
 	}
-	else if(keyCode === RIGHT_ARROW)
+	if (keyCode === RIGHT_ARROW)
 	{
 		isRight = false;
 	}
@@ -750,4 +751,28 @@ const drawBackground = () => {
 	noStroke();
 	fill(0,155,0);
 	rect(0, floorPos_y, width, height - floorPos_y);
+}
+
+function Coin(x, y, radius, width) {
+	this.x = x;
+	this.y = y;
+	this.radius = radius;
+	this.width = width;
+	this.pitch = 0;
+	this.roll = 0;
+
+	this.show = function() {
+		var cos_p = cos(this.pitch);
+		var sin_p = sin(this.pitch);
+		push();
+		translate(this.x, this.y);
+		rotate(this.roll);
+		stroke(138, 43, 226);
+		fill(138, 43, 226);
+		ellipse(0, + (this.width / 2) * cos_p * sign(sin_p), 2 * this.radius, (2 * this.radius) * sin_p);
+		rect( - this.radius, - this.width * cos_p / 2, 2 * this.radius, this.width * cos(this.pitch));
+		fill(230, 230, 250);
+		ellipse(0, - (this.width / 2) * cos_p * sign(sin_p), 2 * this.radius, (2 * this.radius) * sin_p);
+		pop();
+	}
 }
