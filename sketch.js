@@ -9,16 +9,16 @@ Game interaction
 */
 
 
-var gameChar_x;
-var gameChar_y;
-var floorPos_y;
+let gameChar_x;
+let gameChar_y;
 
-var isLeft;
-var isRight;
-var isFalling;
-var isPlummeting;
-var isJumping;
+let floorPos_y;
 
+let isLeft;
+let isRight;
+let isFalling;
+let isPlummeting;
+let ground;
 
 function setup()
 {
@@ -31,76 +31,70 @@ function setup()
 	isRight = false;
 	isFalling = false;
 	isPlummeting = false;
-	isJumping = false;
+	ground = gameChar_y;
 }
 
 function draw()
 {
-
 	///////////DRAWING CODE//////////
 
-	background(100,155,255); //fill the sky blue
+	drawBackground()
+
+	// TODO: draw the canyon
 
 
-	noStroke();
-	fill(0,155,0);
-	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
+	// draw the game character
 
-	//draw the canyon
-
-
-	//the game character
-
-
+	// jumping left
 	if(isLeft && isFalling)
 	{
-		// add your jumping-left code
-
+		jump_Left();
+		// walking_Left();
+		gameChar_x = gameChar_x - 3;
 	}
+	// jumping right
 	else if(isRight && isFalling)
 	{
-		// add your jumping-right code
-
+		jump_Right();
+		// walking_Right()
+		gameChar_x = gameChar_x + 3;
 	}
+	// walking left
 	else if(isLeft)
 	{
-		// add your walking left code
 		walking_Left();
 		gameChar_x = gameChar_x - 3;
 
 	}
+	// walking right
 	else if(isRight)
 	{
-		// add your walking right code
 		walking_Right()
 		gameChar_x = gameChar_x + 3;
 	}
-	else if(isFalling || isPlummeting)
+	// falling down.
+	else if((isFalling || isPlummeting))
 	{
 		// add your jumping facing forwards code
+		Jump_Facing_Forwards();
+		// gameChar_y = gameChar_y - 100;
 
-		var jumpHeight = gameChar_y - 30;
-		var ground = gameChar_y;
-		while(gameChar_y != jumpHeight)
-		{
-			Jump_Facing_Forwards();
-			gameChar_y = gameChar_y - 1;
-		//	console.log(gameChar_y);
-		}
-		//else if(gameChar_y <= ground){
-			//Jump_Facing_Forwards();
-		//	gameChar_y = gameChar_y + 3;
-		//}
-		//gameChar_y = ground;
 	}
-	else
+	// not falling. ++ on the ground.
+	else if (!isFalling  && (gameChar_y === ground))
 	{
 		// add your standing front facing code
 		drawFrontFacingChar();
 	}
-
 	///////////INTERACTION CODE//////////
 	//Put conditional statements to move the game character below here
+	if(gameChar_y < ground)
+	{
+		gameChar_y = gameChar_y + 1;
+	}
+	else{
+		isFalling = false
+	}
 
 }
 
@@ -121,8 +115,11 @@ function keyPressed()
 	}
 	else if(keyCode === UP_ARROW)
 	{
-		isFalling = true;
-	};
+		if(gameChar_y === ground){
+			gameChar_y = gameChar_y - 100;
+			isFalling = true;
+		}
+	}
 
 	//open up the console to see how these work
 	console.log("keyPressed: " + key);
@@ -141,10 +138,6 @@ function keyReleased()
 	{
 		isRight = false;
 	}
-	else if(keyCode === UP_ARROW)
-	{
-		isFalling = false;
-	};
 
 	//open up the console to see how these work
 	console.log("keyPressed: " + key);
@@ -567,23 +560,59 @@ function  walking_Right()
 
 function jump_Right()
 {
-	gameChar_x = 45;
-	gameChar_y = 537;
+
 	//Add your code here ...
 
 	strokeWeight(2);
 	stroke(51);
-	noFill();
-	arc(45, 485, 35, 35, 84.8, 119.5);
+	fill(255);
+	arc(gameChar_x, gameChar_y, 35, 35, 84.8, 119.5);
+	//Color
+	noStroke();
+	beginShape();
+	x = gameChar_x - 24;
+	y = gameChar_y + 45;
+	for(var i = 0; i < 38; i++) {
+		vertex(x, y);
+		var startX = x;
+		var startY = y;
+		if(x <= (gameChar_x + 20) && y >= (gameChar_y + 15)){
+			x = x + 3.2; // 66
+			y = y - i/2; // we need final 97
+		}
+		var endX = x;
+		var endY = y;
+		vertex(endX, endY);
+	}
+	vertex(gameChar_x + 17.5, gameChar_y);
 
+	x2 = gameChar_x - 24;
+	y2 = gameChar_y + 45;
+	for(var i = 0; i < 38; i++) {
+		vertex(x2, y2);
+		var startX2 = x2;
+		var startY2 = y2;
+		if(x2 <= (gameChar_x + 20) && y2 >= (gameChar_y + 15)){
+			x2 = x2 + 0.7; // 66
+			y2 = y2 - i; // we need final 97
+		}
+		var endX2 = x2;
+		var endY2 = y2;
+		vertex(endX2, endY2);
+	}
+	vertex(gameChar_x - 17.5, gameChar_y);
+	vertex(gameChar_x + 17.5, gameChar_y);
+	endShape();
 	//Body Couture
-	x = 21;
-	y = 530;
+	strokeWeight(2);
+	stroke(51);
+	x = gameChar_x - 24;
+	y = gameChar_y + 45;
 	for(var i = 0; i < 38; i++) {
 		point(x, y);
 		var startX = x;
 		var startY = y;
-		if(x <= 66 && y >= 499){
+		if(x <= (gameChar_x + 20) && y >= (gameChar_y + 15)){
 			x = x + 3.2; // 66
 			y = y - i/2; // we need final 97
 		}
@@ -591,15 +620,15 @@ function jump_Right()
 		var endY = y;
 		line(startX, startY, endX, endY);
 	}
-	line(62.5, 485, endX, endY);
+	line(gameChar_x + 17.5, gameChar_y, endX, endY);
 
-	x2 = 21;
-	y2 = 530;
+	x2 = gameChar_x - 24;
+	y2 = gameChar_y + 45;
 	for(var i = 0; i < 38; i++) {
 		point(x2, y2);
 		var startX2 = x2;
 		var startY2 = y2;
-		if(x2 <= 66 && y2 >= 499){
+		if(x2 <= (gameChar_x + 20) && y2 >= (gameChar_y + 15)){
 			x2 = x2 + 0.7; // 66
 			y2 = y2 - i; // we need final 97
 		}
@@ -607,44 +636,81 @@ function jump_Right()
 		var endY2 = y2;
 		line(startX2, startY2, endX2, endY2);
 	}
-	line(27.5, 485, endX2, endY2);
+	line(gameChar_x - 17.5, gameChar_y, endX2, endY2);
 
 	//eys
-	line(42, 482, 47, 475);
-	line(52, 482, 47, 475);
+	line(gameChar_x - 3, gameChar_y - 3, gameChar_x + 2, gameChar_y - 10);
+	line(gameChar_x + 7, gameChar_y -3, gameChar_x + 2, gameChar_y - 10);
 
 	//mouse
 	fill(0,0,0);
-	ellipse(53, 493, 6, 9);
+	ellipse(gameChar_x + 8, gameChar_y + 8, 6, 9);
 
 	//hand
 	noFill();
-	arc(35, 503, 5, 15, 2, 1);
+	arc(gameChar_x - 10, gameChar_y + 18, 5, 15, 2, 1);
 
 	//blush
 	noStroke();
 	fill(255, 204, 255);
-	ellipse(40, 488, 7, 5);
+	ellipse(gameChar_x - 5, gameChar_y + 3, 7, 5);
 }
 
 function jump_Left()
 {
-	gameChar_x = 245;
-	gameChar_y = 537;
 	//Add your code here ...
 	strokeWeight(2);
 	stroke(51);
-	noFill();
-	arc(240, 480, 35, 35, 84.8, 119.5);
+	fill(255);
+	arc(gameChar_x, gameChar_y, 35, 35, 84.8, 119.5);
+	//Color
+	noStroke();
+	beginShape();
 
+	x = gameChar_x + 19;
+	y = gameChar_y + 48;
+	for(var i = 0; i < 38; i++) {
+		vertex(x, y);
+		var startX = x;
+		var startY = y;
+		if(x <= (gameChar_x + 26) && y >= (gameChar_y + 5)){
+			x = x - 3.6; // 66
+			y = y - i; // we need final 97
+		}
+		var endX = x;
+		var endY = y;
+		vertex(endX, endY);
+	}
+	vertex(gameChar_x - 17.5, gameChar_y);
+
+	x2 = gameChar_x + 19;
+	y2 = gameChar_y + 48;
+	for(var i = 0; i < 38; i++) {
+		vertex(x2, y2);
+		var startX2 = x2;
+		var startY2 = y2;
+		if(x2 <= (gameChar_x + 26) && y2 >= (gameChar_y + 12)){
+			x2 = x2 - 0.1; // 66
+			y2 = y2 - i; // we need final 97
+		}
+		var endX2 = x2;
+		var endY2 = y2;
+		vertex(endX2, endY2);
+	}
+	vertex(gameChar_x + 17.5, gameChar_y);
+	vertex(gameChar_x - 17.5, gameChar_y);
+	endShape();
 	//Body Couture
-	x = 259;
-	y = 528;
+	strokeWeight(2);
+	stroke(51);
+	noFill();
+	x = gameChar_x + 19;
+	y = gameChar_y + 48;
 	for(var i = 0; i < 38; i++) {
 		point(x, y);
 		var startX = x;
 		var startY = y;
-		if(x <= 266 && y >= 485){
+		if(x <= (gameChar_x + 26) && y >= (gameChar_y + 5)){
 			x = x - 3.6; // 66
 			y = y - i; // we need final 97
 		}
@@ -652,15 +718,15 @@ function jump_Left()
 		var endY = y;
 		line(startX, startY, endX, endY);
 	}
-	line(222.5, 480, endX, endY);
+	line(gameChar_x - 17.5, gameChar_y, endX, endY);
 
-	x2 = 259;
-	y2 = 528;
+	x2 = gameChar_x + 19;
+	y2 = gameChar_y + 48;
 	for(var i = 0; i < 38; i++) {
 		point(x2, y2);
 		var startX2 = x2;
 		var startY2 = y2;
-		if(x2 <= 266 && y2 >= 492){
+		if(x2 <= (gameChar_x + 26) && y2 >= (gameChar_y + 12)){
 			x2 = x2 - 0.1; // 66
 			y2 = y2 - i; // we need final 97
 		}
@@ -668,22 +734,29 @@ function jump_Left()
 		var endY2 = y2;
 		line(startX2, startY2, endX2, endY2);
 	}
-	line(257.5, 480, endX2, endY2);
+	line(gameChar_x + 17.5, gameChar_y, endX2, endY2);
 
 	//eys
-	line(230, 480, 235, 473);
-	line(240, 480, 235, 473);
+	line(gameChar_x - 10, gameChar_y, gameChar_x - 5, gameChar_y - 7);
+	line(gameChar_x, gameChar_y, gameChar_x - 5, gameChar_y - 7);
 
 	//mouse
 	fill(0,0,0);
-	ellipse(233, 495, 6, 9);
+	ellipse(gameChar_x - 7, gameChar_y + 15, 6, 9);
 
 	//hand
 	noFill();
-	arc(245, 500, 5, 15, 2, 1);
+	arc(gameChar_x + 5, gameChar_y + 20, 5, 15, 2, 1);
 
 	//blush
 	noStroke();
 	fill(255, 204, 255);
-	ellipse(240, 488, 7, 5);
+	ellipse(gameChar_x, gameChar_y + 8, 7, 5);
+}
+
+const drawBackground = () => {
+	background(100,155,255);
+	noStroke();
+	fill(0,155,0);
+	rect(0, floorPos_y, width, height - floorPos_y);
 }
