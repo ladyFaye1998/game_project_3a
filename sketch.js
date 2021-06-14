@@ -18,6 +18,7 @@ let isLeft;
 let isRight;
 let isFalling;
 let isPlummeting;
+let isJumping;
 let ground;
 
 function setup()
@@ -31,6 +32,7 @@ function setup()
 	isRight = false;
 	isFalling = false;
 	isPlummeting = false;
+	isJumping = false;
 	ground = gameChar_y;
 }
 
@@ -44,55 +46,47 @@ function draw()
 
 
 	// draw the game character
-
-	// jumping left
 	if(isLeft && isFalling)
 	{
 		jump_Left();
-		// walking_Left();
 		gameChar_x = gameChar_x - 3;
 	}
-	// jumping right
 	else if(isRight && isFalling)
 	{
 		jump_Right();
-		// walking_Right()
 		gameChar_x = gameChar_x + 3;
 	}
-	// walking left
 	else if(isLeft)
 	{
 		walking_Left();
 		gameChar_x = gameChar_x - 3;
-
 	}
-	// walking right
 	else if(isRight)
 	{
 		walking_Right()
 		gameChar_x = gameChar_x + 3;
 	}
-	// falling down.
-	else if((isFalling || isPlummeting))
+	else if((isFalling || isPlummeting || isJumping))
 	{
-		// add your jumping facing forwards code
 		Jump_Facing_Forwards();
-		// gameChar_y = gameChar_y - 100;
-
 	}
-	// not falling. ++ on the ground.
 	else if (!isFalling  && (gameChar_y === ground))
 	{
-		// add your standing front facing code
 		drawFrontFacingChar();
 	}
 	///////////INTERACTION CODE//////////
 	//Put conditional statements to move the game character below here
-	if(gameChar_y < ground)
+	if((gameChar_y > ground - 100) && isJumping)
+		gameChar_y = gameChar_y - 2;
+	if(gameChar_y === ground - 100){
+		isJumping = false
+		isFalling = true
+	}
+	if((gameChar_y < ground) && isFalling)
 	{
 		gameChar_y = gameChar_y + 1;
 	}
-	else{
+	if(gameChar_y === ground){
 		isFalling = false
 	}
 
@@ -101,10 +95,6 @@ function draw()
 
 function keyPressed()
 {
-	//gameChar_x = mouseX;
-	//gameChar_y = mouseY;
-	// if statements to control the animation of the character when
-	// keys are pressed
 	if (keyCode === LEFT_ARROW)
 	{
 		isLeft = true;
@@ -116,8 +106,9 @@ function keyPressed()
 	else if(keyCode === UP_ARROW)
 	{
 		if(gameChar_y === ground){
-			gameChar_y = gameChar_y - 100;
-			isFalling = true;
+			isJumping = true;
+			// gameChar_y = gameChar_y - 100;
+			// isFalling = true;
 		}
 	}
 
